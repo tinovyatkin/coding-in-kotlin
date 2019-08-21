@@ -17,7 +17,7 @@ Given two strings, compute the edit distance between them.
 
 import kotlin.math.min
 
-fun editPathLen(a: String, b: String): Int {
+fun editPathLen(a: String, b: String, cache: MutableMap<String, MutableMap<String, Int>> = mutableMapOf()): Int {
     if (a.isEmpty()) return b.length;
     if (b.isEmpty()) return a.length;
     if (b.length == 1) {
@@ -31,14 +31,34 @@ fun editPathLen(a: String, b: String): Int {
         return b.length;
     }
     // a and b is longer than 1 character at this point
-    if (a[0] == b[0]) return editPathLen(a.substring(1), b.substring(1));
     val shortenA = a.substring(1);
-    val removingLen = editPathLen(shortenA, b);
-    val replacingLen = editPathLen(b[0] + shortenA, b);
+    if (a[0] == b[0]) {
+        val shortenB = b.substring(1);
+        val nextStep = editPathLen(shortenA, shortenB, cache);
+        if(!cache.contains(shortenA)) cache[shortenA] = mutableMapOf(shortenB to nextStep);
+        else cache[shortenA]!![shortenB] = nextStep;
+        return nextStep;
+    };
+    // check memoisation
+    val subcache = cache.get(a);
+    if(subcache != null) {
+        val res = subcache.get(b);
+        if(res != null) {
+            print("Found cache for ");
+            print(a);
+            print(": ")
+            println(cache[a]);
+            return res;
+        }
+    }
+    val removingLen = editPathLen(shortenA, b, cache);
+    if(!cache.contains(shortenA)) cache[shortenA] = mutableMapOf(b to removingLen);
+    else cache[shortenA]!![b] = removingLen;
+    val replacingLen = editPathLen(b[0] + shortenA, b, cache);
     return 1 + min(removingLen, replacingLen);
 }
 
 fun main() {
-    print("Edit distance: ");
+    println("Edit distance: ");
     println(editPathLen("kitten", "sitting"))
 }
