@@ -25,16 +25,16 @@ import kotlin.math.pow;
 
 fun isArmstrong(N: Int): Boolean {
     val len = ceil(log10(N.toDouble())).toInt()
-    var num = N % 10;
+    var num = N % 10
     var sum = 0;
-    var left = N / 10;
+    var left = N / 10
     while(left + num > 0 && sum < N) {
 //        println("num: ${num}, sum: ${sum}, left: ${left}")
-        sum += num.toDouble().pow(len).toInt();
-        num = left % 10;
-        left /= 10;
+        sum += num.toDouble().pow(len).toInt()
+        num = left % 10
+        left /= 10
     }
-    return sum == N;
+    return sum == N
 }
 
 fun main() {
